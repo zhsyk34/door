@@ -22,6 +22,7 @@ public class Project {
 	//	@Column(columnDefinition = "TIMESTAMP default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP")
 	private LocalDateTime updateTime = LocalDateTime.now();
 
-	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST})
+	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
+//	@Expose
 	private Set<Build> builds;
 }

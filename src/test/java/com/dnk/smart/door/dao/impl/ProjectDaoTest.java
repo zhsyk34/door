@@ -28,7 +28,7 @@ public class ProjectDaoTest {
 	public void find() throws Exception {
 		Project project = projectDao.findById(1L);
 		System.out.println(project);
-//		print(project);
+		print(project);
 	}
 
 	private void print(Object object) {
