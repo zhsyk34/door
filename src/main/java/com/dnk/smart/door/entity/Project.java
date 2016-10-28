@@ -18,6 +18,8 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+	@Column()
+//	@Basic()
     private String name;
     //	@Column(columnDefinition = "TIMESTAMP default CURRENT_TIMESTAMP")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

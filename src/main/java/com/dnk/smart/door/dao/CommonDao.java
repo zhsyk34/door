@@ -10,11 +10,11 @@ public interface CommonDao<E, K extends Serializable> {
 
 	void saves(Collection<E> es);
 
-	void deleteById(K k);
+	int deleteById(K k);
 
-	void deleteByIds(K[] ks);
+	int deleteByIds(K[] ks);
 
-	void deleteByIds(Collection<K> ks);
+	int deleteByIds(Collection<K> ks);
 
 	void deleteByEntity(E e);
 
