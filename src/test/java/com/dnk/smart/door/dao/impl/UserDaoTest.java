@@ -110,4 +110,10 @@ public class UserDaoTest extends CommonDaoTest {
 		System.out.println(userDao.deleteByIds(new Long[]{1L, 3L, 2L}));
 	}
 
+	@Test
+	public void delete4() throws Exception {
+		List<User> list = userDao.findList();
+		userDao.deleteByEntities(list);
+	}
+
 }

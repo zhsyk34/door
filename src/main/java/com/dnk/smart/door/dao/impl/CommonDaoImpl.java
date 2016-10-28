@@ -45,7 +45,7 @@ public class CommonDaoImpl<E, K extends Serializable> implements CommonDao<E, K>
 	//TODO:init twice?
 	@PostConstruct
 	protected final void id() {
-//		System.out.println("init:" + clazz);
+		System.out.println("init:" + clazz);
 		/*sessionFactory.getAllClassMetadata();
 		ClassMetadata metadata = session().getSessionFactory().getClassMetadata(clazz);
 		System.out.println(metadata.getIdentifierPropertyName());
