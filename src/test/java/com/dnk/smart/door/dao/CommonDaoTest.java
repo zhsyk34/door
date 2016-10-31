@@ -1,6 +1,5 @@
-package com.dnk.smart.door.dao.impl;
+package com.dnk.smart.door.dao;
 
-import com.dnk.smart.door.dao.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

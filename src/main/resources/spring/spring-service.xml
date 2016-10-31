@@ -20,8 +20,8 @@
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory"/>
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
-
-    <aop:config proxy-target-class="true">
+    <!--proxy-target-class="true"-->
+    <aop:config>
         <aop:advisor pointcut="execution(* com.dnk.smart.door.dao..*(..))" advice-ref="transactionAdvice"/>
     </aop:config>
 
