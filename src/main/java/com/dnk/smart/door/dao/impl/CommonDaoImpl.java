@@ -1,168 +1,202 @@
 package com.dnk.smart.door.dao.impl;
 
 import com.dnk.smart.door.dao.CommonDao;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
+import com.dnk.smart.door.kit.Page;
+import com.dnk.smart.door.kit.Sort;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
-public class CommonDaoImpl<E, K extends Serializable> implements CommonDao<E, K> {
+class CommonDaoImpl<E, K extends Serializable> implements CommonDao<E, K> {
 
-	@Resource
-	private SessionFactory sessionFactory;
+	private static String keyColumn;
+	private final Class<E> entityClass;
+	private final Class<E> keyClass;
 
-	private final Class<E> clazz;
-	private final Class<E> key;
-	private static String id;
+	@PersistenceContext
+	protected EntityManager manager;
 
-	public CommonDaoImpl() {
+	@SuppressWarnings({"unchecked", "WeakerAccess"})
+	protected CommonDaoImpl() {
 		Type type = this.getClass().getGenericSuperclass();
 		if (type != null && type instanceof ParameterizedType) {
 			ParameterizedType parameterizedType = (ParameterizedType) type;
-			clazz = (Class<E>) parameterizedType.getActualTypeArguments()[0];
-			key = (Class<E>) parameterizedType.getActualTypeArguments()[1];
+			entityClass = (Class<E>) parameterizedType.getActualTypeArguments()[0];
+			keyClass = (Class<E>) parameterizedType.getActualTypeArguments()[1];
 		} else {
 			throw new RuntimeException();
 		}
 	}
 
-	protected final Session session() {
-		return sessionFactory.getCurrentSession();
+	@Override
+	public final EntityManager manager() {
+		return manager;
 	}
 
-	//TODO:init twice?
 	@PostConstruct
-	protected final void id() {
-		System.out.println("init:" + clazz);
-		/*sessionFactory.getAllClassMetadata();
-		ClassMetadata metadata = session().getSessionFactory().getClassMetadata(clazz);
-		System.out.println(metadata.getIdentifierPropertyName());
-		String pk = metadata.getIdentifierPropertyName();
-		System.out.println(pk);*/
+	protected final void init() {
+		Metamodel metamodel = manager.getMetamodel();
+		EntityType<E> entityType = metamodel.entity(entityClass);
+		assert entityType.getIdType().getJavaType() == keyClass;
+		keyColumn = entityType.getId(keyClass).getName();
+		assert keyColumn != null && !keyColumn.isEmpty();
+	}
 
-		Metamodel metamodel = sessionFactory.getMetamodel();
-		for (EntityType<?> entityType : metamodel.getEntities()) {
-			Class<?> entityClass = entityType.getJavaType();//entity class
-			Class<?> idClass = entityType.getIdType().getJavaType();
-
-			if (entityClass == clazz && idClass == key) {
-				id = entityType.getId(key).getName();
-//				System.out.println(id);
-				//id = entityType.getDeclaredId(idClass).getName();
-				return;
-			}
-		}
-		throw new RuntimeException("can't find the key in " + clazz.getSimpleName());
+	@SuppressWarnings("WeakerAccess")
+	protected final K id(E e) {
+		EntityManagerFactory factory = manager.getEntityManagerFactory();
+		@SuppressWarnings("unchecked")
+		K id = (K) factory.getPersistenceUnitUtil().getIdentifier(e);
+		return id;
 	}
 
 	@Override
 	public void save(E e) {
-		session().persist(e);
+		assert e != null;
+		manager.persist(e);
 	}
 
 	@Override
 	public void saves(Collection<E> es) {
+		assert es != null && !es.isEmpty();
 		es.forEach(this::save);
 	}
 
 	@Override
 	public int deleteById(K k) {
-		/*E e = this.findById(k);
-		if (e != null) {
-			session().delete(e);
-		}*/
+		assert k != null;
+		CriteriaBuilder builder = manager.getCriteriaBuilder();
 
-		Session session = session();
+		CriteriaDelete<E> query = builder.createCriteriaDelete(entityClass);
+		query.where(builder.equal(query.from(entityClass).get(keyColumn), k));
 
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-
-		CriteriaDelete<E> query = builder.createCriteriaDelete(clazz);
-		query.where(builder.equal(query.from(clazz).get(id), k));
-
-		return session.createQuery(query).executeUpdate();
+		return manager.createQuery(query).executeUpdate();
 	}
 
 	@Override
 	public int deleteByIds(K[] ks) {
-		/*for (K k : ks) {
-			this.deleteById(k);
-		}*/
-		Session session = session();
-		CriteriaDelete<E> query = session.getCriteriaBuilder().createCriteriaDelete(clazz);
-		query.where(query.from(clazz).get(id).in(ks));
-		return session.createQuery(query).executeUpdate();
+		if (ks == null || ks.length == 0) {
+			return 0;
+		}
+		return this.deleteByIds(Arrays.asList(ks));
 	}
 
 	@Override
 	public int deleteByIds(Collection<K> ks) {
-		Session session = session();
-		CriteriaDelete<E> query = session.getCriteriaBuilder().createCriteriaDelete(clazz);
-		query.where(query.from(clazz).get(id).in(ks));
-		return session.createQuery(query).executeUpdate();
+		if (ks == null || ks.isEmpty()) {
+			return 0;
+		}
+		CriteriaDelete<E> query = manager.getCriteriaBuilder().createCriteriaDelete(entityClass);
+		query.where(query.from(entityClass).get(keyColumn).in(ks));
+		return manager.createQuery(query).executeUpdate();
 	}
 
 	@Override
-	public void deleteByEntity(E e) {
-		session().remove(e);
+	public int deleteByEntity(E e) {
+		assert e != null;
+		return this.deleteById(id(e));
 	}
 
 	@Override
-	public void deleteByEntities(Collection<E> es) {
-//		session().remove(es);
-		es.forEach(this::deleteByEntity);
+	public int deleteByEntities(Collection<E> es) {
+		assert es != null && !es.isEmpty();
+		Collection<K> ks = new ArrayList<>();
+		es.forEach(e -> ks.add(id(e)));
+		return this.deleteByIds(ks);
+	}
+
+	@Override
+	public long deleteAll() {
+		CriteriaDelete<E> query = manager.getCriteriaBuilder().createCriteriaDelete(entityClass);
+		query.from(entityClass);
+		return manager.createQuery(query).executeUpdate();
 	}
 
 	@Override
 	public void update(E e) {
-		session().update(e);
+		assert e != null;
+		K k = id(e);
+		//TODO:k<=0
+		assert k != null;
+		this.merge(e);
 	}
 
 	@Override
 	public void merge(E e) {
-		session().merge(e);
+		assert e != null;
+		manager.merge(e);
 	}
 
 	@Override
 	public boolean contains(E e) {
-		return session().contains(e);
+		return e != null && manager.contains(e);
 	}
 
 	@Override
 	public E findById(K k) {
-		return session().get(clazz, k);
+		assert k != null;
+		return manager.find(entityClass, k);
 	}
 
 	@Override
 	public List<E> findList() {
-		Session session = session();
+		CriteriaQuery<E> query = manager.getCriteriaBuilder().createQuery(entityClass);
+		query.from(entityClass);
 
-		CriteriaQuery<E> query = session.getCriteriaBuilder().createQuery(clazz);
-		query.from(clazz);
-
-		return session.createQuery(query).getResultList();
+		return manager.createQuery(query).getResultList();
 	}
 
 	@Override
 	public long count() {
-		Session session = session();
-
-		CriteriaBuilder builder = session.getCriteriaBuilder();
+		CriteriaBuilder builder = manager.getCriteriaBuilder();
 		CriteriaQuery<Long> query = builder.createQuery(Long.class);
-		Root<E> root = query.from(clazz);
+		Root<E> root = query.from(entityClass);
 		query.select(builder.count(root));
 
-		return session.createQuery(query).uniqueResult();
+		return manager.createQuery(query).getSingleResult();
+	}
+
+	protected final TypedQuery<E> page(TypedQuery<E> query, Page page) {
+		if (page == null) {
+			return query;
+		}
+		return query.setFirstResult(page.start()).setMaxResults(page.getPageSize());
+	}
+
+	/**
+	 * sort.column must be in entity otherwise root.get() will throw exception
+	 */
+	protected final CriteriaQuery<E> order(CriteriaQuery<E> query, CriteriaBuilder builder, Root<E> root, Sort sort) {
+		if (sort == null) {
+			return query;
+		}
+		Sort.Rule rule = sort.getRule();
+		Path<Object> path = root.get(sort.getColumn());
+		Order order = (rule == Sort.Rule.DESC) ? builder.desc(path) : builder.asc(path);
+		return query.orderBy(order);
+	}
+
+	//TODO
+	protected final Predicate[] conditions(CriteriaBuilder builder, Root<E> root, Map<String, Object> map) {
+		if (map == null || map.isEmpty()) {
+			return new Predicate[0];
+		}
+		List<Predicate> predicates = new ArrayList<>();
+		//> = < != in between...define in enum?
+		map.forEach((param, value) -> {
+			//builder.
+		});
+
+		return predicates.toArray(new Predicate[predicates.size()]);
 	}
 }

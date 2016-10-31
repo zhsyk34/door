@@ -10,16 +10,6 @@ import java.util.Map;
 public enum Gender {
 	MALE(1, "男"), FEMALE(2, "女"), OTHER(3, "其他");
 
-	@Getter
-	private final int index;
-	@Getter
-	private final String sex;
-
-	Gender(int index, String sex) {
-		this.index = index;
-		this.sex = sex;
-	}
-
 	private static final Map<Integer, Gender> INDEX_MAP;
 	private static final Map<String, Gender> SEX_MAP;
 
@@ -30,6 +20,16 @@ public enum Gender {
 			INDEX_MAP.put(gender.getIndex(), gender);
 			SEX_MAP.put(gender.getSex(), gender);
 		}
+	}
+
+	@Getter
+	private final int index;
+	@Getter
+	private final String sex;
+
+	Gender(int index, String sex) {
+		this.index = index;
+		this.sex = sex;
 	}
 
 	public static Gender of(Integer index) {
@@ -47,7 +47,6 @@ public enum Gender {
 
 	@Converter
 	public static class GenderConverter implements AttributeConverter<Gender, String> {
-
 		@Override
 		public String convertToDatabaseColumn(Gender gender) {
 			return gender.getSex();

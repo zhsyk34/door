@@ -7,22 +7,30 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
 @Accessors(chain = true)
 @Entity
 public class Build {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private LocalDateTime createTime = LocalDateTime.now();
-    private LocalDateTime updateTime = LocalDateTime.now();
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectId", foreignKey = @ForeignKey(name = "project_build"))
-    @JsonIgnore
-    private Project project;
-//    private Set<Unit> units;
+	@Column(nullable = false, length = 60)
+	private String name;
+
+	@Column(nullable = false, updatable = false)
+	private LocalDateTime createTime = LocalDateTime.now();
+
+	@Column(nullable = false)
+	private LocalDateTime updateTime = LocalDateTime.now();
+
+	@OneToMany(mappedBy = "build", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+	private Set<Unit> units;
+
+	@OneToMany(mappedBy = "build", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Set<UserBuild> userBuilds;
 }

@@ -1,10 +1,13 @@
 package com.dnk.smart.door.dao;
 
+import javax.persistence.EntityManager;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
 public interface CommonDao<E, K extends Serializable> {
+
+	EntityManager manager();
 
 	void save(E e);
 
@@ -16,9 +19,11 @@ public interface CommonDao<E, K extends Serializable> {
 
 	int deleteByIds(Collection<K> ks);
 
-	void deleteByEntity(E e);
+	int deleteByEntity(E e);
 
-	void deleteByEntities(Collection<E> es);
+	int deleteByEntities(Collection<E> es);
+
+	long deleteAll();
 
 	void update(E e);
 
