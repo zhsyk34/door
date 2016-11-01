@@ -1,5 +1,6 @@
 package com.dnk.smart.door.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -27,5 +28,6 @@ public class House {
 
 	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
 	@JoinColumn(name = "unitId", foreignKey = @ForeignKey(name = "fk_house_unit"), nullable = false)
+	@JsonIgnore
 	private Unit unit;
 }
