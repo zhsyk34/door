@@ -2,6 +2,7 @@ package com.dnk.smart.door.dao.impl;
 
 import com.dnk.smart.door.dao.CommonDao;
 import com.dnk.smart.door.kit.Page;
+import com.dnk.smart.door.kit.ReflectKit;
 import com.dnk.smart.door.kit.Sort;
 import com.dnk.smart.door.kit.ValidateKit;
 
@@ -14,8 +15,6 @@ import javax.persistence.criteria.*;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,22 +24,17 @@ class CommonDaoImpl<E, K extends Serializable> implements CommonDao<E, K> {
 
 	private static String keyColumn;
 	private final Class<E> entityClass;
-	private final Class<E> keyClass;
+	private final Class<K> keyClass;
 
 	@SuppressWarnings("WeakerAccess")
 	@PersistenceContext
 	protected EntityManager manager;
 
-	@SuppressWarnings({"unchecked", "WeakerAccess"})
+	@SuppressWarnings("WeakerAccess")
 	protected CommonDaoImpl() {
-		Type type = this.getClass().getGenericSuperclass();
-		if (type != null && type instanceof ParameterizedType) {
-			ParameterizedType parameterizedType = (ParameterizedType) type;
-			entityClass = (Class<E>) parameterizedType.getActualTypeArguments()[0];
-			keyClass = (Class<E>) parameterizedType.getActualTypeArguments()[1];
-		} else {
-			throw new RuntimeException();
-		}
+		entityClass = ReflectKit.getGenericType(this.getClass(), 0);
+		keyClass = ReflectKit.getGenericType(this.getClass(), 1);
+		assert entityClass != null && keyClass != null;
 	}
 
 	@Override
@@ -157,6 +151,8 @@ class CommonDaoImpl<E, K extends Serializable> implements CommonDao<E, K> {
 	public List<E> findList() {
 		CriteriaQuery<E> query = manager.getCriteriaBuilder().createQuery(entityClass);
 		query.from(entityClass);
+		//query.select(query.from(entityClass));//default,can omit
+
 		return manager.createQuery(query).getResultList();
 	}
 

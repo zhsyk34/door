@@ -126,12 +126,58 @@ public class UnitDaoImpl extends CommonDaoImpl<Unit, Long> implements UnitDao {
 		query.where(conditions(builder, buildJoin, unitRoot, buildIds, buildName, unitIds, unitName));
 		//multi
 		List<Selection<?>> selections = new ArrayList<>();
+		//根据主键发出多余查询,需要有构造方法?
 		selections.add(unitRoot);
+		//直接指定
+		/*selections.add(unitRoot.get("id"));
+		selections.add(unitRoot.get("name"));
+		selections.add(unitRoot.get("createTime"));
+		selections.add(unitRoot.get("updateTime"));*/
 		selections.add(buildJoin.get("id").alias("buildId"));
 		selections.add(buildJoin.get("name").alias("buildName"));
 		query.multiselect(selections);
 
 		super.order(query, builder, unitRoot, sort);
+		return super.page(manager.createQuery(query), page).getResultList();
+	}
+
+	@Override
+	public List<UnitVO> findVOList2(Collection<Long> buildIds, String buildName, Collection<Long> unitIds, String unitName, Page page, Sort sort) {
+		CriteriaBuilder builder = manager.getCriteriaBuilder();
+		CriteriaQuery<UnitVO> query = builder.createQuery(UnitVO.class);
+		Root<Unit> unitRoot = query.from(Unit.class);
+
+		Join<Unit, Build> buildJoin = unitRoot.join("build");
+
+		query.where(conditions(builder, buildJoin, unitRoot, buildIds, buildName, unitIds, unitName));
+
+		//test function
+		//Expression<String> function = builder.function("CURRENT_USER", String.class);
+
+		//base select,not multi
+		query.select(
+				builder.construct(
+						UnitVO.class,
+						unitRoot.get("id").alias("id"),
+						unitRoot.get("name").alias("name"),
+						unitRoot.get("createTime").alias("createTime"),
+						unitRoot.get("updateTime").alias("updateTime"),
+						buildJoin.get("id").alias("buildId"),
+						buildJoin.get("name").alias("buildName")
+				)
+		);
+		//example for tuple
+//		TupleElement<Long> element = unitRoot.get("id").alias("id");
+//		query.select(builder.tuple(element));
+
+		super.order(query, builder, unitRoot, sort);
+
+		//test append/modify original order
+//		Order order2 = builder.desc(buildJoin.get("id"));
+//		List<Order> orderList = query.getOrderList();
+//		List<Order> orderList2 = new ArrayList<>(orderList);
+//		orderList2.add(order2);
+//		query.orderBy(orderList2);
 		return super.page(manager.createQuery(query), page).getResultList();
 	}
 

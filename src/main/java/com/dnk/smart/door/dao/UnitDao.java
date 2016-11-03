@@ -21,4 +21,6 @@ public interface UnitDao extends CommonDao<Unit, Long> {
 
 	List<UnitVO> findVOList(Collection<Long> buildIds, String buildName, Collection<Long> unitIds, String unitName, Page page, Sort sort);
 
+	List<UnitVO> findVOList2(Collection<Long> buildIds, String buildName, Collection<Long> unitIds, String unitName, Page page, Sort sort);
+
 }

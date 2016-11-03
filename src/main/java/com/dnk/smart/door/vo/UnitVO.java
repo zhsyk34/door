@@ -1,13 +1,17 @@
 package com.dnk.smart.door.vo;
 
 import com.dnk.smart.door.entity.Unit;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UnitVO {
 
 	private Long id;
