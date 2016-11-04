@@ -1,13 +1,9 @@
-package com.dnk.smart.door.kit;
+package com.dnk.smart.door.kit.jpa;
 
 import lombok.Getter;
 
 @Getter
 public class Sort {
-
-	public enum Rule {
-		DESC, ASC
-	}
 
 	private final String column;
 	private final Rule rule;
@@ -27,4 +23,11 @@ public class Sort {
 		return new Sort(column, rule);
 	}
 
+	/*@Deprecated
+	public <T, E> Path<T> path(Root<E> root) {
+		return root.get(column);
+	}*/
+
 }
+
+

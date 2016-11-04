@@ -1,8 +1,9 @@
 package com.dnk.smart.door.dao;
 
 import com.dnk.smart.door.entity.Build;
-import com.dnk.smart.door.kit.Page;
-import com.dnk.smart.door.kit.Sort;
+import com.dnk.smart.door.kit.jpa.Page;
+import com.dnk.smart.door.kit.jpa.Rule;
+import com.dnk.smart.door.kit.jpa.Sort;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -28,7 +29,7 @@ public class BuildDaoTest extends CommonDaoTest {
 
 	@Test
 	public void findList2() throws Exception {
-		List<Build> list = buildDao.findList(Arrays.asList(1L, 3L), "b", Page.of(1, 3), Sort.of("createTime", Sort.Rule.DESC));
+		List<Build> list = buildDao.findList(Arrays.asList(1L, 3L), "b", Page.of(1, 3), Sort.of("createTime", Rule.DESC));
 		list.forEach(this::print);
 	}
 

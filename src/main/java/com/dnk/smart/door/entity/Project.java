@@ -1,6 +1,5 @@
 package com.dnk.smart.door.entity;
 
-import com.dnk.smart.door.entity.dict.Gender;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +13,7 @@ import java.util.Set;
 @Setter
 @Accessors(chain = true)
 @Entity
-public class User {
+public class Project {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -22,20 +21,13 @@ public class User {
 	@Column(nullable = false, length = 60)
 	private String name;
 
-	@Column(nullable = false)
-	private String password;
-
-	@Convert(converter = Gender.GenderConverter.class)
-	private Gender gender = Gender.MALE;
-
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createTime = LocalDateTime.now();
 
 	@Column(nullable = false)
 	private LocalDateTime updateTime = LocalDateTime.now();
 
-	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "project", cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
 	@JsonIgnore
-	private Set<UserBuild> userBuilds;
-
+	private Set<Build> builds;
 }

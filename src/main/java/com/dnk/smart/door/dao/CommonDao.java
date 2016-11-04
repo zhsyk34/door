@@ -1,6 +1,7 @@
 package com.dnk.smart.door.dao;
 
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
@@ -8,6 +9,10 @@ import java.util.List;
 public interface CommonDao<E, K extends Serializable> {
 
 	EntityManager manager();
+
+	CriteriaBuilder builder();
+
+	K id(E e);
 
 	void save(E e);
 
@@ -34,6 +39,10 @@ public interface CommonDao<E, K extends Serializable> {
 	E findById(K k);
 
 	List<E> findList();
+
+	/*List<E> findList(Page page, Sort sort, Collection<Predicate> predicates);
+
+	List<E> findList(Page page, Sort sort, Predicate... predicates);*/
 
 	long count();
 

@@ -2,9 +2,9 @@ package com.dnk.smart.door.dao.impl;
 
 import com.dnk.smart.door.dao.BuildDao;
 import com.dnk.smart.door.entity.Build;
-import com.dnk.smart.door.kit.Page;
-import com.dnk.smart.door.kit.PredicateKit;
-import com.dnk.smart.door.kit.Sort;
+import com.dnk.smart.door.kit.jpa.Page;
+import com.dnk.smart.door.kit.jpa.PredicateKit;
+import com.dnk.smart.door.kit.jpa.Sort;
 import com.dnk.smart.door.kit.ValidateKit;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +33,7 @@ public class BuildDaoImpl extends CommonDaoImpl<Build, Long> implements BuildDao
 		Root<Build> root = query.from(Build.class);
 
 		query.where(conditions(builder, root, ids, name));
-		super.order(query, builder, root, sort);
+		//super.order(query, builder, root, sort);
 
 		return super.page(manager.createQuery(query), page).getResultList();
 	}

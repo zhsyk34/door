@@ -1,8 +1,8 @@
 package com.dnk.smart.door.dao;
 
 import com.dnk.smart.door.entity.Build;
-import com.dnk.smart.door.kit.Page;
-import com.dnk.smart.door.kit.Sort;
+import com.dnk.smart.door.kit.jpa.Page;
+import com.dnk.smart.door.kit.jpa.Sort;
 
 import java.util.Collection;
 import java.util.List;

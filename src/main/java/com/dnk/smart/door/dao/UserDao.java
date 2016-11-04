@@ -2,8 +2,8 @@ package com.dnk.smart.door.dao;
 
 import com.dnk.smart.door.entity.User;
 import com.dnk.smart.door.entity.dict.Gender;
-import com.dnk.smart.door.kit.Page;
-import com.dnk.smart.door.kit.Sort;
+import com.dnk.smart.door.kit.jpa.Page;
+import com.dnk.smart.door.kit.jpa.Sort;
 
 import java.time.LocalDate;
 import java.util.List;

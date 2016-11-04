@@ -16,14 +16,8 @@
 
     <context:component-scan base-package="com.dnk.smart.door.service"/>
 
-    <!--suppress SpringModelInspection -->
+    <!--jdbc transaction-->
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" p:entityManagerFactory-ref="entityManagerFactory"/>
-
-    <tx:annotation-driven transaction-manager="transactionManager"/>
-    <!--proxy-target-class="true"-->
-    <aop:config>
-        <aop:advisor pointcut="execution(* com.dnk.smart.door.dao..*(..))" advice-ref="transactionAdvice"/>
-    </aop:config>
 
     <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
         <tx:attributes>
@@ -48,4 +42,26 @@
             <tx:method name="*" read-only="true"/>
         </tx:attributes>
     </tx:advice>
+
+    <!--druid interceptor--><!--https://github.com/alibaba/druid/wiki/FAQ-->
+    <bean id="druid-stat-interceptor" class="com.alibaba.druid.support.spring.stat.DruidStatInterceptor"/>
+
+    <bean id="druid-stat-pointcut" class="org.springframework.aop.support.JdkRegexpMethodPointcut" scope="prototype">
+        <property name="patterns">
+            <list>
+                <value>com.dnk.smart.service.*</value>
+                <value>com.dnk.smart.door.dao.*</value>
+            </list>
+        </property>
+    </bean>
+
+    <!---->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- proxy-target-class="true"-->
+    <aop:config>
+        <aop:advisor pointcut="execution(* com.dnk.smart.door.dao..*(..))" advice-ref="transactionAdvice"/>
+        <aop:advisor advice-ref="druid-stat-interceptor" pointcut-ref="druid-stat-pointcut"/>
+    </aop:config>
+
 </beans>

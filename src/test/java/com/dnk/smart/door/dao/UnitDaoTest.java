@@ -3,8 +3,9 @@ package com.dnk.smart.door.dao;
 import com.dnk.smart.door.entity.Build;
 import com.dnk.smart.door.entity.Unit;
 import com.dnk.smart.door.entity.User;
-import com.dnk.smart.door.kit.Page;
-import com.dnk.smart.door.kit.Sort;
+import com.dnk.smart.door.kit.jpa.Page;
+import com.dnk.smart.door.kit.jpa.Rule;
+import com.dnk.smart.door.kit.jpa.Sort;
 import com.dnk.smart.door.vo.UnitVO;
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ public class UnitDaoTest extends CommonDaoTest {
 
 	@Test
 	public void findList2() throws Exception {
-		List<Unit> list = unitDao.findList(Arrays.asList(1L, 3L), "bu", null, "u", Page.of(1, 3), Sort.of("name", Sort.Rule.DESC));
+		List<Unit> list = unitDao.findList(Arrays.asList(1L, 3L), "bu", null, "u", Page.of(1, 3), Sort.of("name", Rule.DESC));
 		list.forEach(super::print);
 	}
 
@@ -52,7 +53,7 @@ public class UnitDaoTest extends CommonDaoTest {
 
 	@Test
 	public void findMap() throws Exception {
-		List<Tuple> list = unitDao.findTuple(Arrays.asList(1L, 3L), "bu", null, "u", Page.of(1, 3), Sort.of("name", Sort.Rule.DESC));
+		List<Tuple> list = unitDao.findTuple(Arrays.asList(1L, 3L), "bu", null, "u", Page.of(1, 3), Sort.of("name", Rule.DESC));
 
 		//TODO:alias would be null.error。Warning!!!
 		list.forEach(tuple -> {
@@ -68,13 +69,13 @@ public class UnitDaoTest extends CommonDaoTest {
 
 	@Test
 	public void findVO() throws Exception {
-		List<UnitVO> list = unitDao.findVOList(Arrays.asList(1L, 3L), "bu", null, "u", Page.of(1, 3), Sort.of("name", Sort.Rule.DESC));
+		List<UnitVO> list = unitDao.findVOList(Arrays.asList(1L, 3L), "bu", null, "u", Page.of(1, 3), Sort.of("name", Rule.DESC));
 		super.print(list);
 	}
 
 	@Test
 	public void findVO2() throws Exception {
-		List<UnitVO> list = unitDao.findVOList2(Arrays.asList(2L, 3L), "bu", null, "u", Page.of(1, 5), Sort.of("id", Sort.Rule.DESC));
+		List<UnitVO> list = unitDao.findVOList2(Arrays.asList(2L, 3L), "bu", null, "u", Page.of(1, 5), Sort.of("id", Rule.DESC));
 		super.print(list);
 	}
 
@@ -82,6 +83,17 @@ public class UnitDaoTest extends CommonDaoTest {
 	public void findName() throws Exception {
 		List<Unit> list = unitDao.findList(2L, "unit57");
 		list.forEach(super::print);
+	}
+
+	@Test
+	public void api2() throws Exception {
+		EntityManager manager = unitDao.manager();
+		CriteriaBuilder b1 = manager.getCriteriaBuilder();
+		CriteriaBuilder b2 = manager.getCriteriaBuilder();
+
+		System.out.println(b1.hashCode());
+		System.out.println(b2.hashCode());
+		System.out.println(b1 == b2);
 	}
 
 	@Test

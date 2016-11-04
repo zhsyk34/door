@@ -3,9 +3,9 @@ package com.dnk.smart.door.dao.impl;
 import com.dnk.smart.door.dao.UnitDao;
 import com.dnk.smart.door.entity.Build;
 import com.dnk.smart.door.entity.Unit;
-import com.dnk.smart.door.kit.Page;
-import com.dnk.smart.door.kit.PredicateKit;
-import com.dnk.smart.door.kit.Sort;
+import com.dnk.smart.door.kit.jpa.Page;
+import com.dnk.smart.door.kit.jpa.PredicateKit;
+import com.dnk.smart.door.kit.jpa.Sort;
 import com.dnk.smart.door.kit.ValidateKit;
 import com.dnk.smart.door.vo.UnitVO;
 import org.springframework.stereotype.Repository;
@@ -50,7 +50,7 @@ public class UnitDaoImpl extends CommonDaoImpl<Unit, Long> implements UnitDao {
 		query.select(unitRoot);
 
 		query.where(conditions(builder, buildJoin, unitRoot, buildIds, buildName, unitIds, unitName));
-		super.order(query, builder, unitRoot, sort);
+		//super.order(query, builder, unitRoot, sort);
 
 		return super.page(manager.createQuery(query), page).getResultList();
 	}
@@ -94,25 +94,8 @@ public class UnitDaoImpl extends CommonDaoImpl<Unit, Long> implements UnitDao {
 		//CompoundSelection<Map> construct = builder.construct(Map.class, unitRoot.get("id"));
 		//query.select(construct);
 
-		super.order(query, builder, unitRoot, sort);
+		//super.order(query, builder, unitRoot, sort);
 		return super.page(manager.createQuery(query), page).getResultList();
-//		TypedQuery<Map> typedQuery =
-//		return typedQuery.getResultList();
-//		typedQuery.setHint(QueryHints.READ_ONLY, Transformers.ALIAS_TO_ENTITY_MAP);
-//		return typedQuery.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).getResultList();
-//		List<Tuple> list = manager().createQuery(query).getResultList();
-//		list.forEach(tuple -> {
-////			System.out.println(tuple);
-//			List<TupleElement<?>> elements = tuple.getElements();
-//			System.out.println(elements.size());
-//			/*elements.forEach(tupleElement -> {
-//
-//				String key = tupleElement.getAlias();
-//				System.out.println(key);
-//			});*/
-//		});
-
-//		return null;
 	}
 
 	@Override
@@ -137,7 +120,7 @@ public class UnitDaoImpl extends CommonDaoImpl<Unit, Long> implements UnitDao {
 		selections.add(buildJoin.get("name").alias("buildName"));
 		query.multiselect(selections);
 
-		super.order(query, builder, unitRoot, sort);
+		//super.order(query, builder, unitRoot, sort);
 		return super.page(manager.createQuery(query), page).getResultList();
 	}
 
@@ -170,7 +153,7 @@ public class UnitDaoImpl extends CommonDaoImpl<Unit, Long> implements UnitDao {
 //		TupleElement<Long> element = unitRoot.get("id").alias("id");
 //		query.select(builder.tuple(element));
 
-		super.order(query, builder, unitRoot, sort);
+		//super.order(query, builder, unitRoot, sort);
 
 		//test append/modify original order
 //		Order order2 = builder.desc(buildJoin.get("id"));

@@ -2,13 +2,15 @@ package com.dnk.smart.door.dao;
 
 import com.dnk.smart.door.entity.User;
 import com.dnk.smart.door.entity.dict.Gender;
-import com.dnk.smart.door.kit.Page;
-import com.dnk.smart.door.kit.Sort;
+import com.dnk.smart.door.kit.jpa.Page;
+import com.dnk.smart.door.kit.jpa.Rule;
+import com.dnk.smart.door.kit.jpa.Sort;
 import org.junit.Test;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -25,14 +27,16 @@ public class UserDaoTest extends CommonDaoTest {
 
 	@Test
 	public void saves() throws Exception {
+		List<User> list = new ArrayList<>();
 		for (int i = 1; i < 5; i++) {
 			User user = new User();
 			user.setName("player" + i).setPassword("pass" + i);
 
 			Gender gender = Gender.of(1 + (new Random().nextInt(100)) % 3);
 			user.setGender(gender);
-			userDao.save(user);
+			list.add(user);
 		}
+		userDao.saves(list);
 	}
 
 	@Test
@@ -45,13 +49,13 @@ public class UserDaoTest extends CommonDaoTest {
 	public void findList() throws Exception {
 		List<User> list = userDao.findList();
 		print(list);
-		System.out.println(list.size());
 	}
 
 	@Test
 	public void update() throws Exception {
 		User user = userDao.findById(1L);
-		user.setName("player");
+		user.setName("xyz");
+		user.setId(3L);
 		user.setUpdateTime(LocalDateTime.now());
 
 		userDao.update(user);
@@ -85,6 +89,7 @@ public class UserDaoTest extends CommonDaoTest {
 		User user = new User();
 		user.setId(1L);//update3()的情况均为Insert
 		user.setName("super");
+		user.setPassword("ps");
 		user.setUpdateTime(LocalDateTime.now());
 
 		userDao.merge(user);
@@ -92,12 +97,12 @@ public class UserDaoTest extends CommonDaoTest {
 
 	@Test
 	public void delete() throws Exception {
-		System.out.println(userDao.deleteById(1L));
+		System.out.println(userDao.deleteById(9L));
 	}
 
 	@Test
 	public void delete1() throws Exception {
-		User user = new User().setId(2L);
+		User user = new User().setId(9L);
 		//userDao.deleteByEntity(user);
 		EntityManager manager = userDao.manager();
 		System.out.println(manager);
@@ -106,12 +111,12 @@ public class UserDaoTest extends CommonDaoTest {
 
 	@Test
 	public void delete2() throws Exception {
-		System.out.println(userDao.deleteByIds(Arrays.asList(new Long[]{1L, 2L})));
+		System.out.println(userDao.deleteByIds(Arrays.asList(new Long[]{9L, 9L})));
 	}
 
 	@Test
 	public void delete3() throws Exception {
-		System.out.println(userDao.deleteByIds(new Long[]{1L, 3L, 2L}));
+		System.out.println(userDao.deleteByIds(new Long[]{9L, 11L, 13L}));
 	}
 
 	@Test
@@ -122,7 +127,7 @@ public class UserDaoTest extends CommonDaoTest {
 
 	@Test
 	public void findName() throws Exception {
-		User user = userDao.find("a", "3");
+		User user = userDao.find("lazy", "3");
 		print(user);
 	}
 
@@ -135,16 +140,16 @@ public class UserDaoTest extends CommonDaoTest {
 
 	@Test
 	public void findList3() throws Exception {
-		Sort sort = Sort.of("name", Sort.Rule.DESC);
+		Sort sort = Sort.of("name", Rule.DESC);
 		Page page = Page.of(1, 3);
-		List<User> list = userDao.findList("a", Gender.FEMALE, null, null, page, sort);
+		List<User> list = userDao.findList("l", Gender.MALE, null, null, page, sort);
 		list.forEach(this::print);
 
 	}
 
 	@Test
 	public void count() throws Exception {
-		long count = userDao.count("xyz", Gender.FEMALE, null, null);
+		long count = userDao.count("l", Gender.MALE, null, null);
 		System.out.println(count);
 	}
 
